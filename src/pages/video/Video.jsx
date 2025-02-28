@@ -177,6 +177,8 @@ const VideoDetails = ({ videoDetails, channelDetails }) => {
   const [showMore, setShowMore] = useState(false);
   const linkRegex = /(https?:\/\/[^\s]+)/g;
 
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
   return (
     <>
       <Flex
