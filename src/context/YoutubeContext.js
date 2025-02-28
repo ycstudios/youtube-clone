@@ -3,8 +3,8 @@ import axios from "axios";
 
 import { errorHandling } from "../utils/utils";
 
-const YoutubeContext = createContext()
-export default YoutubeContext
+const YoutubeContext = createContext();
+export default YoutubeContext;
 
 export const ContextProvider = ({ children }) => {
   const [trendingVideos, setTrendingVideos] = useState([]);
@@ -15,108 +15,92 @@ export const ContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [nextPageToken, setNextPageToken] = useState("");
 
-  // 1. Autocomplete Suggetions
+  // 1. Autocomplete Suggestions (Using Google API)
   const generateAutocomplete = async (query) => {
     try {
-      const res = await axios.get(`https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&num=10&q=${query}`)
-      console.log(JSON.parse(res.data.split(/\(|\)/)[1])[1].map((arr) => arr[0]))
-      setAutocomplete(JSON.parse(res.data.split(/\(|\)/)[1])[1].map((arr) => arr[0]))
-
+      const res = await axios.get(
+        `https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&num=10&q=${query}`
+      );
+      const suggestions = JSON.parse(res.data.split(/\(|\)/)[1])[1].map(
+        (arr) => arr[0]
+      );
+      console.log(suggestions);
+      setAutocomplete(suggestions);
     } catch (error) {
-      const options = {
-
-        method: "GET",
-        url: "https://youtube-data8.p.rapidapi.com/auto-complete/",
-        params: {
-          q: query,
-          hl: "en",
-          gl: "US"
-        },
-        headers: {
-          "X-RapidAPI-Key": process.env.REACT_APP_YOUTUBE_API_KEY_RAPIDAPI,
-          "X-RapidAPI-Host": "youtube-data8.p.rapidapi.com"
-        }
-      };
-
-      try {
-        const response = await axios.request(options);
-        console.log(response.data);
-        setAutocomplete(response?.data?.results)
-      } catch (error) {
-        errorHandling(error)
-      }
+      errorHandling(error);
     }
-  }
+  };
 
-  // 2. Trending Videos
+  // 2. Trending Videos (Using Google API)
   const getTrendingVideos = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const res = await axios.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&chart=mostPopular&regionCode=${country}&key=${`${process.env.REACT_APP_YOUTUBE_API_KEY_GOOGLE2}`}&maxResults=15`)
-      setTrendingVideos(res.data.items)
-      setTrendingVideosLength(res.data.pageInfo.totalResults)
-      setNextPageToken(res.data.nextPageToken)
-      setIsLoading(false)
+      const res = await axios.get(
+        `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&chart=mostPopular&regionCode=${country}&key=${process.env.REACT_APP_YOUTUBE_API_KEY_GOOGLE1}&maxResults=15`
+      );
+      setTrendingVideos(res.data.items);
+      setTrendingVideosLength(res.data.pageInfo.totalResults);
+      setNextPageToken(res.data.nextPageToken);
+      setIsLoading(false);
     } catch (error) {
-
       try {
-        const res = await axios.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&chart=mostPopular&regionCode=${country}&key=${`${process.env.REACT_APP_YOUTUBE_API_KEY_GOOGLE1}`}&maxResults=15`)
-        setTrendingVideos(res.data.items)
-        setTrendingVideosLength(res.data.pageInfo.totalResults)
-        setNextPageToken(res.data.nextPageToken)
-        setIsLoading(false)
+        const res = await axios.get(
+          `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&chart=mostPopular&regionCode=${country}&key=${process.env.REACT_APP_YOUTUBE_API_KEY_GOOGLE2}&maxResults=15`
+        );
+        setTrendingVideos(res.data.items);
+        setTrendingVideosLength(res.data.pageInfo.totalResults);
+        setNextPageToken(res.data.nextPageToken);
+        setIsLoading(false);
       } catch (error) {
-        errorHandling(error)
+        errorHandling(error);
       }
-
     }
-  }
+  };
 
-  // 3. Search videos
+  // 3. Search Videos (Using Google API)
   const getSearchVideos = async (query) => {
-    setIsLoading(true)
-
-    const options = {
-      method: "GET",
-      url: "https://youtube-v31.p.rapidapi.com/search",
-      params: {
-        q: query,
-        part: "snippet,id",
-        regionCode: country,
-        maxResults: "50",
-        type: "video",
-        videoDuration: "medium"
-      },
-      headers: {
-        "X-RapidAPI-Key": `${process.env.REACT_APP_YOUTUBE_API_KEY_RAPIDAPI}`,
-        "X-RapidAPI-Host": "youtube-v31.p.rapidapi.com"
-      }
-    };
-
+    setIsLoading(true);
     try {
-      const response = await axios.request(options);
-      console.log(response.data);
-      setIsLoading(false)
-      setSearchVideos(response.data.items)
+      const res = await axios.get(
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&key=${process.env.REACT_APP_YOUTUBE_API_KEY_GOOGLE1}&maxResults=50&type=video&videoDuration=medium`
+      );
+      console.log(res.data);
+      setIsLoading(false);
+      setSearchVideos(res.data.items);
     } catch (error) {
-      alert("Rapid api not working using alternate api")
-
       try {
-        const response2 = await axios.get(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=business&key=${process.env.REACT_APP_YOUTUBE_API_KEY_GOOGLE1}&maxResults=50&type=video&videoDuration=medium`)
-        console.log(response2.data);
-        setIsLoading(false)
-        setSearchVideos(response2.data.items)
+        const res2 = await axios.get(
+          `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&key=${process.env.REACT_APP_YOUTUBE_API_KEY_GOOGLE2}&maxResults=50&type=video&videoDuration=medium`
+        );
+        console.log(res2.data);
+        setIsLoading(false);
+        setSearchVideos(res2.data.items);
       } catch (error) {
-        errorHandling(error)
+        errorHandling(error);
       }
-
     }
-  }
+  };
 
   return (
-    <YoutubeContext.Provider value={{ nextPageToken, setNextPageToken, isLoading, generateAutocomplete, autocomplete, trendingVideos, getTrendingVideos, setTrendingVideos, country, setCountry, getSearchVideos, searchVideos, setIsLoading, trendingVideosLength }}>
+    <YoutubeContext.Provider
+      value={{
+        nextPageToken,
+        setNextPageToken,
+        isLoading,
+        generateAutocomplete,
+        autocomplete,
+        trendingVideos,
+        getTrendingVideos,
+        setTrendingVideos,
+        country,
+        setCountry,
+        getSearchVideos,
+        searchVideos,
+        setIsLoading,
+        trendingVideosLength,
+      }}
+    >
       {children}
     </YoutubeContext.Provider>
-  )
-}
-
+  );
+};

@@ -23,6 +23,7 @@ import Header from "../../components/layout/Header";
 import RelatedList from "../../components/list/RelatedList.jsx";
 import { errorHandling } from "../../utils/utils";
 
+
 const Video = () => {
   const [videoDetails, setvideoDetails] = useState({});
   const [channelDetails, setChannelDetails] = useState({});
@@ -176,6 +177,19 @@ export default Video;
 const VideoDetails = ({ videoDetails, channelDetails }) => {
   const [showMore, setShowMore] = useState(false);
   const linkRegex = /(https?:\/\/[^\s]+)/g;
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const LikeDislikeButtons = ({ initialLikes }) => {
+    const [likes, setLikes] = useState(initialLikes);
+    const [liked, setLiked] = useState(false);
+  
+    const handleLikeClick = () => {
+      if (liked) {
+        setLikes(likes - 1); // Undo like
+      } else {
+        setLikes(likes + 1); // Increase like count
+      }
+      setLiked(!liked); // Toggle state
+    };
 
   return (
     <>
@@ -204,16 +218,17 @@ const VideoDetails = ({ videoDetails, channelDetails }) => {
             </Text>
           </Box>
           <Button
-            _hover={{ bg: "#b7b7b7" }}
-            bg="#e6e6e6"
-            color={"#303030"}
-            fontSize="14px"
-            borderRadius="20px"
-            size={"sm"}
-            alignSelf={"flex-end"}
-          >
-            Subscribe
-          </Button>
+  _hover={{ bg: isSubscribed ? "#b7b7b7" : "#a10000" }}
+  bg={isSubscribed ? "gray" : "red"}
+  color={"white"}
+  fontSize="14px"
+  borderRadius="20px"
+  size={"sm"}
+  alignSelf={"flex-end"}
+  onClick={() => setIsSubscribed(!isSubscribed)}
+>
+  {isSubscribed ? "Subscribed" : "Subscribe"}
+</Button>
         </Flex>
         <Flex padding={"8px"} gap={1}>
           <Box>
