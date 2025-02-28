@@ -23,7 +23,6 @@ import Header from "../../components/layout/Header";
 import RelatedList from "../../components/list/RelatedList.jsx";
 import { errorHandling } from "../../utils/utils";
 
-
 const Video = () => {
   const [videoDetails, setvideoDetails] = useState({});
   const [channelDetails, setChannelDetails] = useState({});
@@ -177,19 +176,6 @@ export default Video;
 const VideoDetails = ({ videoDetails, channelDetails }) => {
   const [showMore, setShowMore] = useState(false);
   const linkRegex = /(https?:\/\/[^\s]+)/g;
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const LikeDislikeButtons = ({ initialLikes }) => {
-    const [likes, setLikes] = useState(initialLikes);
-    const [liked, setLiked] = useState(false);
-  
-    const handleLikeClick = () => {
-      if (liked) {
-        setLikes(likes - 1); // Undo like
-      } else {
-        setLikes(likes + 1); // Increase like count
-      }
-      setLiked(!liked); // Toggle state
-    };
 
   return (
     <>
@@ -228,7 +214,7 @@ const VideoDetails = ({ videoDetails, channelDetails }) => {
   onClick={() => setIsSubscribed(!isSubscribed)}
 >
   {isSubscribed ? "Subscribed" : "Subscribe"}
-</Button>
+          </Button>
         </Flex>
         <Flex padding={"8px"} gap={1}>
           <Box>
